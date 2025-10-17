@@ -12,16 +12,14 @@ import io.cucumber.java.en.Then;
 public class ApiStepDefinitions {
     
     // API Steps instance for API business logic
-    // Serenity automatically manages dependency injection
-    private final ApiSteps apiSteps;
+    // Initialize with no-argument constructor for Cucumber compatibility
+    private ApiSteps apiSteps;
     
     /**
-     * Constructor with dependency injection
-     * 
-     * @param apiSteps the ApiSteps instance
+     * No-argument constructor required by Cucumber
      */
-    public ApiStepDefinitions(ApiSteps apiSteps) {
-        this.apiSteps = apiSteps;
+    public ApiStepDefinitions() {
+        this.apiSteps = new ApiSteps();
     }
     
     /**

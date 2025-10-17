@@ -2,6 +2,8 @@ package com.automation.steps;
 
 import com.automation.pages.ProductsPage;
 import net.serenitybdd.annotations.Step;
+import net.serenitybdd.core.Serenity;
+import org.openqa.selenium.WebDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,16 +20,29 @@ public class ProductsSteps {
     private static final Logger logger = LoggerFactory.getLogger(ProductsSteps.class);
     
     // Page object instance for products page interactions
-    private final ProductsPage productsPage;
+    // Serenity automatically manages page object lifecycle
+    private ProductsPage productsPage;
     
     /**
-     * Constructor with dependency injection
-     * Serenity automatically injects page objects
-     * 
-     * @param productsPage the ProductsPage instance
+     * No-argument constructor required by Serenity/Cucumber
+     * Page object will be initialized on first use
      */
-    public ProductsSteps(ProductsPage productsPage) {
-        this.productsPage = productsPage;
+    public ProductsSteps() {
+        // Page object initialized lazily
+    }
+    
+    /**
+     * Get or create the products page instance
+     * Serenity provides the WebDriver automatically
+     * 
+     * @return ProductsPage instance
+     */
+    private ProductsPage getProductsPage() {
+        if (productsPage == null) {
+            WebDriver driver = Serenity.getDriver();
+            productsPage = new ProductsPage(driver);
+        }
+        return productsPage;
     }
     
     /**
@@ -36,7 +51,7 @@ public class ProductsSteps {
     @Step("Verify products page is displayed")
     public void verifyProductsPageDisplayed() {
         // Get page display status from page object
-        boolean isDisplayed = productsPage.isProductsPageDisplayed();
+        boolean isDisplayed = getProductsPage().isProductsPageDisplayed();
         
         // Assert that products page is displayed using AssertJ
         assertThat(isDisplayed)
@@ -55,7 +70,7 @@ public class ProductsSteps {
     @Step("Verify page title is: {0}")
     public void verifyPageTitle(String expectedTitle) {
         // Get page title from page object
-        String actualTitle = productsPage.getPageTitle();
+        String actualTitle = getProductsPage().getPageTitle();
         
         // Assert that page title matches expected title using AssertJ
         assertThat(actualTitle)
@@ -72,7 +87,7 @@ public class ProductsSteps {
     @Step("Add first product to cart")
     public void addFirstProductToCart() {
         // Call page object method to add product
-        productsPage.addFirstProductToCart();
+        getProductsPage().addFirstProductToCart();
         
         // Log the step
         logger.info("User added first product to cart");
@@ -86,7 +101,7 @@ public class ProductsSteps {
     @Step("Verify cart badge shows count: {0}")
     public void verifyCartBadgeCount(String expectedCount) {
         // Get cart badge count from page object
-        String actualCount = productsPage.getCartBadgeCount();
+        String actualCount = getProductsPage().getCartBadgeCount();
         
         // Assert that cart badge count matches expected count using AssertJ
         assertThat(actualCount)
@@ -103,7 +118,7 @@ public class ProductsSteps {
     @Step("Click shopping cart icon")
     public void clickShoppingCart() {
         // Call page object method to click cart
-        productsPage.clickShoppingCart();
+        getProductsPage().clickShoppingCart();
         
         // Log the step
         logger.info("User clicked shopping cart icon");
@@ -115,7 +130,7 @@ public class ProductsSteps {
     @Step("Logout from application")
     public void logout() {
         // Call page object method to perform logout
-        productsPage.performLogout();
+        getProductsPage().performLogout();
         
         // Log the step
         logger.info("User logged out from application");
@@ -127,7 +142,7 @@ public class ProductsSteps {
     @Step("Verify products are displayed")
     public void verifyProductsAreDisplayed() {
         // Get product count from page object
-        int productCount = productsPage.getProductCount();
+        int productCount = getProductsPage().getProductCount();
         
         // Assert that at least one product is displayed using AssertJ
         assertThat(productCount)
@@ -144,7 +159,7 @@ public class ProductsSteps {
     @Step("Click menu button")
     public void clickMenuButton() {
         // Call page object method to click menu
-        productsPage.clickMenuButton();
+        getProductsPage().clickMenuButton();
         
         // Log the step
         logger.info("User clicked menu button");

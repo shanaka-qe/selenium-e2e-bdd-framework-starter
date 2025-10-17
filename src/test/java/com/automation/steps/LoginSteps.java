@@ -5,6 +5,8 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.When;
 import io.cucumber.java.en.Then;
 import net.serenitybdd.annotations.Step;
+import net.serenitybdd.core.Serenity;
+import org.openqa.selenium.WebDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,16 +23,29 @@ public class LoginSteps {
     private static final Logger logger = LoggerFactory.getLogger(LoginSteps.class);
     
     // Page object instance for login page interactions
-    private final LoginPage loginPage;
+    // Serenity automatically manages page object lifecycle
+    private LoginPage loginPage;
     
     /**
-     * Constructor with dependency injection
-     * Serenity automatically injects page objects
-     * 
-     * @param loginPage the LoginPage instance
+     * No-argument constructor required by Serenity/Cucumber
+     * Page object will be initialized on first use
      */
-    public LoginSteps(LoginPage loginPage) {
-        this.loginPage = loginPage;
+    public LoginSteps() {
+        // Page object initialized lazily
+    }
+    
+    /**
+     * Get or create the login page instance
+     * Serenity provides the WebDriver automatically
+     * 
+     * @return LoginPage instance
+     */
+    private LoginPage getLoginPage() {
+        if (loginPage == null) {
+            WebDriver driver = Serenity.getDriver();
+            loginPage = new LoginPage(driver);
+        }
+        return loginPage;
     }
     
     /**
@@ -40,7 +55,7 @@ public class LoginSteps {
     @Step("Navigate to the login page")
     public void navigateToLoginPage() {
         // Call page object method to navigate
-        loginPage.navigateToLoginPage();
+        getLoginPage().navigateToLoginPage();
         
         // Log the step
         logger.info("User navigated to login page");
@@ -54,7 +69,7 @@ public class LoginSteps {
     @Step("Enter username: {0}")
     public void enterUsername(String username) {
         // Call page object method to enter username
-        loginPage.enterUsername(username);
+        getLoginPage().enterUsername(username);
         
         // Log the step
         logger.info("User entered username: {}", username);
@@ -68,7 +83,7 @@ public class LoginSteps {
     @Step("Enter password")
     public void enterPassword(String password) {
         // Call page object method to enter password
-        loginPage.enterPassword(password);
+        getLoginPage().enterPassword(password);
         
         // Log the step (password masked for security)
         logger.info("User entered password");
@@ -80,7 +95,7 @@ public class LoginSteps {
     @Step("Click login button")
     public void clickLoginButton() {
         // Call page object method to click login button
-        loginPage.clickLoginButton();
+        getLoginPage().clickLoginButton();
         
         // Log the step
         logger.info("User clicked login button");
@@ -95,7 +110,7 @@ public class LoginSteps {
     @Step("Login with username: {0}")
     public void loginWithCredentials(String username, String password) {
         // Call page object method for complete login
-        loginPage.performLogin(username, password);
+        getLoginPage().performLogin(username, password);
         
         // Log the step
         logger.info("User logged in with username: {}", username);
@@ -107,7 +122,7 @@ public class LoginSteps {
     @Step("Verify login page is displayed")
     public void verifyLoginPageDisplayed() {
         // Get page display status from page object
-        boolean isDisplayed = loginPage.isLoginPageDisplayed();
+        boolean isDisplayed = getLoginPage().isLoginPageDisplayed();
         
         // Assert that login page is displayed using AssertJ
         assertThat(isDisplayed)
@@ -124,7 +139,7 @@ public class LoginSteps {
     @Step("Verify error message is displayed")
     public void verifyErrorMessageDisplayed() {
         // Get error message display status from page object
-        boolean isDisplayed = loginPage.isErrorMessageDisplayed();
+        boolean isDisplayed = getLoginPage().isErrorMessageDisplayed();
         
         // Assert that error message is displayed using AssertJ
         assertThat(isDisplayed)
@@ -143,7 +158,7 @@ public class LoginSteps {
     @Step("Verify error message contains: {0}")
     public void verifyErrorMessageContains(String expectedText) {
         // Get error message text from page object
-        String actualErrorMessage = loginPage.getErrorMessage();
+        String actualErrorMessage = getLoginPage().getErrorMessage();
         
         // Assert that error message contains expected text using AssertJ
         assertThat(actualErrorMessage)

@@ -12,16 +12,15 @@ import io.cucumber.java.en.When;
 public class ProductsStepDefinitions {
     
     // Steps class instance for products business logic
-    // Serenity automatically manages dependency injection
-    private final ProductsSteps productsSteps;
+    // Created in no-argument constructor for Cucumber compatibility
+    private ProductsSteps productsSteps;
     
     /**
-     * Constructor with dependency injection
-     * 
-     * @param productsSteps the ProductsSteps instance
+     * No-argument constructor required by Cucumber
+     * Initializes the ProductsSteps instance
      */
-    public ProductsStepDefinitions(ProductsSteps productsSteps) {
-        this.productsSteps = productsSteps;
+    public ProductsStepDefinitions() {
+        this.productsSteps = new ProductsSteps();
     }
     
     /**

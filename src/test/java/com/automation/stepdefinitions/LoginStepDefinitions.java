@@ -13,16 +13,15 @@ import io.cucumber.java.en.Then;
 public class LoginStepDefinitions {
     
     // Steps class instance for login business logic
-    // Serenity automatically manages dependency injection
-    private final LoginSteps loginSteps;
+    // Created in no-argument constructor for Cucumber compatibility
+    private LoginSteps loginSteps;
     
     /**
-     * Constructor with dependency injection
-     * 
-     * @param loginSteps the LoginSteps instance
+     * No-argument constructor required by Cucumber
+     * Initializes the LoginSteps instance
      */
-    public LoginStepDefinitions(LoginSteps loginSteps) {
-        this.loginSteps = loginSteps;
+    public LoginStepDefinitions() {
+        this.loginSteps = new LoginSteps();
     }
     
     /**
