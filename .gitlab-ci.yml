@@ -1,0 +1,200 @@
+# GitLab CI/CD Pipeline Configuration
+# Automated testing pipeline for Selenium E2E BDD Framework
+
+# Define pipeline stages
+stages:
+  - build
+  - test
+  - report
+  - deploy
+
+# Global variables
+variables:
+  MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
+  MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version"
+  BROWSER: "chrome"
+  HEADLESS: "true"
+  CI_MODE: "true"
+
+# Cache Maven dependencies for faster builds
+cache:
+  paths:
+    - .m2/repository
+
+# Build stage - Compile and verify project
+build:
+  stage: build
+  image: maven:3.9-openjdk-11
+  script:
+    - echo "Building project..."
+    - mvn $MAVEN_CLI_OPTS clean compile
+    - mvn $MAVEN_CLI_OPTS test-compile
+  artifacts:
+    paths:
+      - target/
+    expire_in: 1 hour
+  only:
+    - branches
+
+# Smoke Tests - Fast tests for quick feedback
+smoke-tests:
+  stage: test
+  image: maven:3.9-openjdk-11
+  services:
+    - selenium/standalone-chrome:latest
+  script:
+    - echo "Running smoke tests..."
+    - apt-get update && apt-get install -y google-chrome-stable
+    - mvn $MAVEN_CLI_OPTS verify -P smoke -DHEADLESS=true -DCI_MODE=true
+  artifacts:
+    when: always
+    paths:
+      - target/site/serenity/
+      - target/cucumber-reports.*
+    reports:
+      junit: target/cucumber-reports.xml
+    expire_in: 7 days
+  only:
+    - merge_requests
+    - main
+    - develop
+
+# Regression Tests - Comprehensive test suite
+regression-tests:
+  stage: test
+  image: maven:3.9-openjdk-11
+  services:
+    - selenium/standalone-chrome:latest
+  script:
+    - echo "Running regression tests..."
+    - apt-get update && apt-get install -y google-chrome-stable
+    - mvn $MAVEN_CLI_OPTS verify -P regression -DHEADLESS=true -DCI_MODE=true
+  artifacts:
+    when: always
+    paths:
+      - target/site/serenity/
+      - target/cucumber-reports.*
+      - target/logs/
+    reports:
+      junit: target/cucumber-reports.xml
+    expire_in: 30 days
+  only:
+    - main
+    - schedules
+  allow_failure: false
+
+# API Tests - Test API endpoints
+api-tests:
+  stage: test
+  image: maven:3.9-openjdk-11
+  script:
+    - echo "Running API tests..."
+    - mvn $MAVEN_CLI_OPTS verify -P api -DCI_MODE=true
+  artifacts:
+    when: always
+    paths:
+      - target/site/serenity/
+      - target/cucumber-reports.*
+    reports:
+      junit: target/cucumber-reports.xml
+    expire_in: 7 days
+  only:
+    - branches
+
+# Cross-Browser Tests - Firefox
+firefox-tests:
+  stage: test
+  image: maven:3.9-openjdk-11
+  services:
+    - selenium/standalone-firefox:latest
+  script:
+    - echo "Running tests on Firefox..."
+    - apt-get update && apt-get install -y firefox-esr
+    - mvn $MAVEN_CLI_OPTS verify -P smoke -Dwebdriver.driver=firefox -DHEADLESS=true
+  artifacts:
+    when: always
+    paths:
+      - target/site/serenity/
+    expire_in: 3 days
+  only:
+    - schedules
+  allow_failure: true
+
+# Generate and publish reports
+generate-reports:
+  stage: report
+  image: maven:3.9-openjdk-11
+  script:
+    - echo "Generating Serenity reports..."
+    - mvn $MAVEN_CLI_OPTS serenity:aggregate
+  artifacts:
+    paths:
+      - target/site/serenity/
+    expire_in: 30 days
+  dependencies:
+    - regression-tests
+  only:
+    - main
+
+# Deploy reports to GitLab Pages
+pages:
+  stage: deploy
+  script:
+    - mkdir -p public
+    - cp -r target/site/serenity/* public/
+  artifacts:
+    paths:
+      - public
+    expire_in: 30 days
+  dependencies:
+    - generate-reports
+  only:
+    - main
+
+# Scheduled nightly tests
+nightly-tests:
+  stage: test
+  image: maven:3.9-openjdk-11
+  services:
+    - selenium/standalone-chrome:latest
+  script:
+    - echo "Running nightly regression tests..."
+    - apt-get update && apt-get install -y google-chrome-stable
+    - mvn $MAVEN_CLI_OPTS verify -P regression -DHEADLESS=true
+  artifacts:
+    when: always
+    paths:
+      - target/site/serenity/
+      - target/logs/
+    expire_in: 7 days
+  only:
+    - schedules
+  when: delayed
+  start_in: 1 hour
+
+# Manual trigger for production smoke tests
+production-smoke:
+  stage: test
+  image: maven:3.9-openjdk-11
+  script:
+    - echo "Running production smoke tests..."
+    - mvn $MAVEN_CLI_OPTS verify -P smoke -P prod -DHEADLESS=true
+  artifacts:
+    when: always
+    paths:
+      - target/site/serenity/
+    expire_in: 30 days
+  when: manual
+  only:
+    - main
+
+# Cleanup job
+cleanup:
+  stage: deploy
+  script:
+    - echo "Cleaning up old artifacts..."
+    - find target -type f -name "*.log" -mtime +7 -delete
+  when: always
+  only:
+    - main
+

@@ -48,4 +48,5 @@ drivers/
 # Environment files
 .env
 *.env
+!env.example
 
