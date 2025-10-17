@@ -1,0 +1,51 @@
+# Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# IntelliJ IDEA
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+# Eclipse
+.project
+.classpath
+.settings/
+bin/
+references/
+
+# VS Code
+.vscode/
+
+# Mac OS
+.DS_Store
+
+# Serenity Reports
+target/site/serenity/
+
+# Logs
+*.log
+logs/
+
+# Test Output
+test-output/
+screenshots/
+.cucumber/
+
+# WebDriver binaries
+drivers/
+
+# Environment files
+.env
+*.env
+
