@@ -8,15 +8,18 @@ A comprehensive, production-ready Selenium test automation framework using BDD (
 ## 🎯 Features
 
 - ✅ **BDD Framework**: Cucumber with Serenity BDD for behavior-driven testing
+- ✅ **API Testing**: REST Assured integration for comprehensive API testing
 - ✅ **Design Patterns**: Page Object Model, Factory Pattern, Singleton Pattern
 - ✅ **Clear Layer Separation**: Feature files, Step Definitions, Steps, and Page Objects
+- ✅ **Environment Management**: Dev, Staging, Prod configurations with .env support
 - ✅ **Comprehensive Reporting**: Serenity BDD's detailed HTML reports with screenshots
-- ✅ **CI/CD Integration**: GitHub Actions workflow for automated test execution
+- ✅ **Multi-Platform CI/CD**: GitHub Actions, GitLab CI, and Jenkins pipelines
 - ✅ **Cross-Browser Support**: Chrome, Firefox, Edge with automatic driver management
 - ✅ **Parallel Execution**: ThreadSafe design for concurrent test execution
 - ✅ **Logging**: SLF4J with Logback for detailed test execution logs
 - ✅ **Utility Classes**: Reusable helpers for common operations
-- ✅ **Configuration Management**: Externalized configuration using Serenity.conf
+- ✅ **Maven Profiles**: Smoke, Regression, API test execution profiles
+- ✅ **Configuration Management**: Externalized configuration with environment variables
 
 ## 📖 Documentation
 
@@ -44,6 +47,15 @@ selenium-e2e-bdd-framework-starter/
 │       ├── java/
 │       │   └── com/
 │       │       └── automation/
+│       │           ├── api/             # REST API Testing
+│       │           │   ├── ApiSteps.java
+│       │           │   └── BaseAPI.java
+│       │           ├── config/          # Environment Configuration
+│       │           │   ├── DevEnvironment.java
+│       │           │   ├── EnvironmentConfig.java
+│       │           │   ├── EnvironmentFactory.java
+│       │           │   ├── ProdEnvironment.java
+│       │           │   └── StagingEnvironment.java
 │       │           ├── factory/         # Factory Pattern for driver management
 │       │           │   └── DriverFactory.java
 │       │           ├── pages/           # Page Object Model (Layer 4)
@@ -52,25 +64,36 @@ selenium-e2e-bdd-framework-starter/
 │       │           │   └── ProductsPage.java
 │       │           ├── runners/         # Test Runners
 │       │           │   └── TestRunner.java
-│       │           ├── stepdefinitions/ # Step Definitions - Glue Code (Layer 3)
+│       │           ├── stepdefinitions/ # Step Definitions - Glue Code (Layer 2)
+│       │           │   ├── ApiStepDefinitions.java
 │       │           │   ├── Hooks.java
 │       │           │   ├── LoginStepDefinitions.java
 │       │           │   └── ProductsStepDefinitions.java
-│       │           ├── steps/           # Business Logic Layer (Layer 2)
+│       │           ├── steps/           # Business Logic Layer (Layer 3)
 │       │           │   ├── LoginSteps.java
 │       │           │   └── ProductsSteps.java
 │       │           └── utils/           # Utility Classes
 │       │               ├── ConfigReader.java
+│       │               ├── EnvReader.java
 │       │               └── WaitHelper.java
 │       └── resources/
 │           ├── features/                # Feature Files - BDD Scenarios (Layer 1)
+│           │   ├── API.feature
 │           │   ├── Login.feature
 │           │   └── Products.feature
-│           └── logback-test.xml         # Logging configuration
+│           ├── logback-test.xml         # Logging configuration
+│           └── serenity.properties      # Additional Serenity properties
 ├── .gitignore                           # Git ignore file
+├── .gitlab-ci.yml                       # GitLab CI/CD pipeline
+├── CONTRIBUTING.md                      # Contribution guidelines
+├── env.example                          # Environment variables template
+├── GETTING_STARTED.md                   # Getting started guide
+├── Jenkinsfile                          # Jenkins pipeline configuration
+├── LICENSE                              # MIT License
 ├── pom.xml                              # Maven dependencies and build configuration
+├── README.md                            # Main project documentation
 ├── serenity.conf                        # Serenity BDD configuration
-└── README.md                            # Project documentation
+└── SETUP.md                             # Detailed setup instructions
 ```
 
 ## 🏗️ Architecture & Layers
@@ -122,11 +145,45 @@ cd selenium-e2e-bdd-framework-starter
 mvn clean install -DskipTests
 ```
 
-### 3. Run Tests
+### 3. Configure Environment (Optional)
+
+```bash
+# Copy environment template
+cp env.example .env
+
+# Edit with your settings (optional for demo)
+nano .env
+```
+
+### 4. Run Tests
 
 #### Run all tests:
 ```bash
 mvn clean verify
+```
+
+#### Run with Maven profiles:
+```bash
+# Smoke tests (recommended for first run)
+mvn verify -P smoke
+
+# Regression tests
+mvn verify -P regression
+
+# API tests only
+mvn verify -P api
+```
+
+#### Run with different environments:
+```bash
+# Development environment
+mvn verify -P dev
+
+# Staging environment
+mvn verify -P staging
+
+# Production environment
+mvn verify -P prod
 ```
 
 #### Run with specific browser:
@@ -141,8 +198,8 @@ mvn clean verify -Dwebdriver.driver=edge
 # Run only smoke tests
 mvn clean verify -Dcucumber.filter.tags="@smoke"
 
-# Run regression tests
-mvn clean verify -Dcucumber.filter.tags="@regression"
+# Run API tests
+mvn clean verify -Dcucumber.filter.tags="@api"
 
 # Run login tests
 mvn clean verify -Dcucumber.filter.tags="@login"
@@ -153,7 +210,7 @@ mvn clean verify -Dcucumber.filter.tags="@login"
 mvn clean verify -Dcucumber.features="src/test/resources/features/Login.feature"
 ```
 
-### 4. View Test Reports
+### 5. View Test Reports
 
 After test execution, Serenity generates comprehensive HTML reports:
 
@@ -177,6 +234,10 @@ The framework includes example test scenarios for a demo e-commerce application:
 - ✅ View products after successful login
 - ✅ Add product to shopping cart
 - ✅ Logout from application
+
+### API Feature
+- ✅ Verify API health check endpoint
+- ✅ Create new resource via API POST request
 
 ## 🎨 Design Patterns Implemented
 
@@ -211,14 +272,58 @@ webdriver {
 
 ### Environment-Specific Configuration
 
+The framework supports multiple environments with separate configurations:
+
 ```bash
-# Run tests against different environments
-mvn clean verify -Denvironment=dev
-mvn clean verify -Denvironment=staging
-mvn clean verify -Denvironment=prod
+# Copy environment template
+cp env.example .env
+
+# Edit environment variables
+nano .env
+```
+
+### Environment Variables (`.env`)
+```properties
+APP_BASE_URL=https://www.saucedemo.com
+API_BASE_URL=https://api.example.com
+BROWSER=chrome
+HEADLESS=false
+TEST_USERNAME=standard_user
+TEST_PASSWORD=secret_sauce
+```
+
+### Run Tests by Environment
+
+```bash
+# Development environment
+mvn clean verify -P dev
+
+# Staging environment
+mvn clean verify -P staging
+
+# Production environment
+mvn clean verify -P prod
+
+# CI environment (headless)
+mvn clean verify -P ci
+```
+
+### Maven Profiles
+
+```bash
+# Smoke tests (fast, critical paths)
+mvn verify -P smoke
+
+# Regression tests (comprehensive)
+mvn verify -P regression
+
+# API tests only
+mvn verify -P api
 ```
 
 ## 📊 CI/CD Integration
+
+The framework includes comprehensive CI/CD configurations for multiple platforms:
 
 ### GitHub Actions
 
@@ -232,6 +337,26 @@ The framework includes a GitHub Actions workflow (`.github/workflows/test-execut
 - ✅ Generates and uploads Serenity reports
 - ✅ Uploads screenshots on test failures
 - ✅ Publishes test result summaries
+
+### GitLab CI/CD
+
+The `.gitlab-ci.yml` configuration provides:
+
+- ✅ Multi-stage pipeline (build, test, report)
+- ✅ Automated test execution on commits
+- ✅ Serenity report generation and archiving
+- ✅ Configurable test execution profiles
+- ✅ Docker-based execution environment
+
+### Jenkins
+
+The `Jenkinsfile` provides:
+
+- ✅ Declarative pipeline configuration
+- ✅ Automated builds and test execution
+- ✅ Test report publishing
+- ✅ Email notifications on failures
+- ✅ Parameterized builds for different environments
 
 ## 📝 Logging
 
@@ -268,24 +393,50 @@ Logs are generated using SLF4J with Logback:
 
 ## 📚 Dependencies
 
+### Core Framework
 - **Serenity BDD**: 4.1.20
 - **Cucumber**: 7.14.0
 - **Selenium WebDriver**: 4.15.0
 - **WebDriverManager**: 5.6.2
+
+### API Testing
+- **REST Assured**: 5.4.0
+- **JSON Path**: 5.4.0
+- **JSON Schema Validator**: 5.4.0
+
+### Testing & Assertions
 - **JUnit**: 4.13.2 / 5.10.1
 - **AssertJ**: 3.24.2
+
+### Logging
 - **SLF4J**: 2.0.9
 - **Logback**: 1.4.14
+
+### Utilities
+- **Gson**: 2.10.1
+- **Jackson**: 2.16.0
+- **dotenv-java**: 3.0.0
 
 For complete dependency details and technology stack information, see the **[Project Summary](documentations/project_summary.md)**.
 
 ## 🤝 Contributing
 
+Contributions are welcome! Please read our [Contributing Guidelines](CONTRIBUTING.md) for details on:
+
+- Code of Conduct
+- Development workflow
+- Coding standards
+- Commit message conventions
+- Pull request process
+
+Quick start:
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/new-feature`)
 3. Commit your changes (`git commit -m 'Add new feature'`)
 4. Push to the branch (`git push origin feature/new-feature`)
 5. Open a Pull Request
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for complete guidelines.
 
 ## 📄 License
 
@@ -303,10 +454,19 @@ Created with ❤️ for the test automation community
 
 ## 📚 Additional Resources
 
+### Framework Documentation
 - **[Quick Start Guide](documentations/quick_start.md)** - Fast-track setup and execution
+- **[Setup Guide](SETUP.md)** - Comprehensive installation instructions
+- **[Getting Started](GETTING_STARTED.md)** - Step-by-step beginner's guide
 - **[Complete File Index](documentations/index.md)** - Quick navigation to all project files
 - **[Architecture Guide](documentations/architecture.md)** - Deep dive into framework design
 - **[Project Summary](documentations/project_summary.md)** - Statistics and completion details
+
+### External Resources
+- [Selenium Documentation](https://www.selenium.dev/documentation/)
+- [Serenity BDD Documentation](https://serenity-bdd.info)
+- [Cucumber Documentation](https://cucumber.io/docs/cucumber/)
+- [REST Assured Documentation](https://rest-assured.io)
 
 ---
 
