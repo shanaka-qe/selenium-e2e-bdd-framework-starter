@@ -1,5 +1,15 @@
 # Selenium E2E BDD Framework with Serenity and Cucumber
 
+![Java](https://img.shields.io/badge/Java-11-blue?style=flat-square&logo=java)
+![Selenium](https://img.shields.io/badge/Selenium-4.15.0-green?style=flat-square&logo=selenium)
+![Serenity BDD](https://img.shields.io/badge/Serenity%20BDD-4.1.20-orange?style=flat-square)
+![Cucumber](https://img.shields.io/badge/Cucumber-7.14.0-brightgreen?style=flat-square&logo=cucumber)
+![REST Assured](https://img.shields.io/badge/REST%20Assured-5.4.0-blue?style=flat-square)
+![Maven](https://img.shields.io/badge/Maven-3.6+-red?style=flat-square&logo=apache-maven)
+![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)
+
+**Enterprise-grade test automation framework for multi-application testing with Selenium, Serenity BDD, Cucumber, and REST Assured**
+
 **Author:** Shanaka Fernando  
 **LinkedIn:** https://www.linkedin.com/in/shanaka-qe/
 
