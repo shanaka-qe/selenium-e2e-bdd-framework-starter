@@ -8,7 +8,7 @@
 ![Maven](https://img.shields.io/badge/Maven-3.6+-red?style=flat-square&logo=apache-maven)
 ![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)
 
-**Enterprise-grade test automation framework for multi-application testing with Selenium, Serenity BDD, Cucumber, and REST Assured**
+> **Enterprise-grade test automation framework for multi-application testing with Selenium, Serenity BDD, Cucumber, and REST Assured**
 
 **Author:** Shanaka Fernando  
 **LinkedIn:** https://www.linkedin.com/in/shanaka-qe/
