@@ -46,7 +46,7 @@ This README provides an overview of the framework. For more detailed information
 selenium-e2e-bdd-framework-starter/
 ├── .github/
 │   └── workflows/
-│       └── test-execution.yml          # GitHub Actions CI/CD workflow
+│       └── test-execution.yml.disabled # GitHub Actions CI/CD workflow (disabled template)
 ├── documentations/                      # Additional documentation
 │   ├── architecture.md                 # Technical architecture details
 │   ├── index.md                        # Complete file reference guide
@@ -145,7 +145,7 @@ For a detailed explanation of the architecture, design patterns, and data flow, 
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/selenium-e2e-bdd-framework-starter.git
+git clone https://github.com/shanaka-qe/selenium-e2e-bdd-framework-starter.git
 cd selenium-e2e-bdd-framework-starter
 ```
 
@@ -337,7 +337,7 @@ The framework includes comprehensive CI/CD configurations for multiple platforms
 
 ### GitHub Actions
 
-The framework includes a GitHub Actions workflow (`.github/workflows/test-execution.yml`) that:
+The framework includes a GitHub Actions workflow template (`.github/workflows/test-execution.yml.disabled`). It ships disabled; rename it to `test-execution.yml` to enable. The workflow:
 
 - ✅ Runs on push to main/develop branches
 - ✅ Runs on pull requests to main

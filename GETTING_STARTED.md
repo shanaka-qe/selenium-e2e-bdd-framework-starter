@@ -23,7 +23,7 @@ git --version
 
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/selenium-e2e-bdd-framework-starter.git
+git clone https://github.com/shanaka-qe/selenium-e2e-bdd-framework-starter.git
 cd selenium-e2e-bdd-framework-starter
 
 # Install dependencies (takes 2-3 minutes)
@@ -338,7 +338,7 @@ mvn clean install -U -DskipTests
 
 - **Documentation**: `documentations/` folder
 - **Examples**: `src/test/resources/features/`
-- **Issues**: GitHub Issues
+- **Issues**: https://github.com/shanaka-qe/selenium-e2e-bdd-framework-starter/issues
 - **Questions**: GitHub Discussions
 
 ---

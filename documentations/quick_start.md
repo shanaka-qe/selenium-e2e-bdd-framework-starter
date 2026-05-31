@@ -20,7 +20,7 @@ google-chrome --version  # Linux
 
 ### 1. Clone and Navigate
 ```bash
-git clone https://github.com/yourusername/selenium-e2e-bdd-framework-starter.git
+git clone https://github.com/shanaka-qe/selenium-e2e-bdd-framework-starter.git
 cd selenium-e2e-bdd-framework-starter
 ```
 
