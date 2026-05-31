@@ -1,6 +1,7 @@
 package com.automation.factory;
 
 import com.automation.utils.ConfigReader;
+import com.automation.utils.EnvReader;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -26,7 +27,17 @@ public class DriverFactory {
     
     // ThreadLocal to maintain separate WebDriver instance per thread (for parallel execution)
     private static final ThreadLocal<WebDriver> driver = new ThreadLocal<>();
-    
+
+    /**
+     * Check whether headless mode is enabled via the HEADLESS toggle
+     * Reads system property, .env file, or system environment (see EnvReader)
+     *
+     * @return true if headless mode should be used
+     */
+    private static boolean isHeadless() {
+        return EnvReader.getEnvAsBoolean("HEADLESS", false);
+    }
+
     /**
      * Initialize WebDriver based on browser type from configuration
      * 
@@ -84,7 +95,14 @@ public class DriverFactory {
         options.addArguments("--disable-dev-shm-usage");     // Overcome limited resource problems
         options.addArguments("--no-sandbox");                // Bypass OS security model
         options.addArguments("--remote-allow-origins=*");    // Allow remote origins
-        
+
+        // Enable headless mode when HEADLESS toggle is truthy
+        if (isHeadless()) {
+            logger.info("Running Chrome in headless mode");
+            options.addArguments("--headless=new");
+            options.addArguments("--window-size=1920,1080");
+        }
+
         // Create and return ChromeDriver instance with options
         return new ChromeDriver(options);
     }
@@ -101,7 +119,13 @@ public class DriverFactory {
         // Configure Firefox-specific options
         FirefoxOptions options = new FirefoxOptions();
         options.addArguments("--start-maximized");           // Start browser maximized
-        
+
+        // Enable headless mode when HEADLESS toggle is truthy
+        if (isHeadless()) {
+            logger.info("Running Firefox in headless mode");
+            options.addArguments("-headless");
+        }
+
         // Create and return FirefoxDriver instance with options
         return new FirefoxDriver(options);
     }
@@ -118,7 +142,14 @@ public class DriverFactory {
         // Configure Edge-specific options
         EdgeOptions options = new EdgeOptions();
         options.addArguments("--start-maximized");           // Start browser maximized
-        
+
+        // Enable headless mode when HEADLESS toggle is truthy
+        if (isHeadless()) {
+            logger.info("Running Edge in headless mode");
+            options.addArguments("--headless=new");
+            options.addArguments("--window-size=1920,1080");
+        }
+
         // Create and return EdgeDriver instance with options
         return new EdgeDriver(options);
     }
